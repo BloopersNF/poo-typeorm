@@ -1,44 +1,36 @@
 import { AppDataSource } from "./data-source";
-import { Task } from "./entity/Task";
-import { TaskList } from "./entity/TaskList";
-import { TaskListManager } from "./entity/TaskListManager";
+import { TaskRepo } from "./repo/TaskRepo";
 
 async function main() {
-  try {
-    await AppDataSource.initialize();
-    
-    console.log("Creating a new task list manager...");
-    const taskListManager = new TaskListManager();
-    console.log("TaskListManager: ", taskListManager);
-    AppDataSource.manager.save(taskListManager);
-    console.log("Saved a new task list manager with id: " + taskListManager.id);
-    const taskList = new TaskList();
-    taskList.title = "Play";
-    AppDataSource.manager.save(taskList);
-    console.log("Saved a new task list with id: " + taskList.id);
+    try {
+        await AppDataSource.initialize();
+        // 1. Testando a criação de uma nova tarefa
+        const newTask = await TaskRepo.create({
+            title: "Estudar TypeORM",
+            description: "Revisar CRUD e DataSource",
+            done: false
+        });
+        console.log("Tarefa criada:", newTask);
 
-    taskListManager.taskLists = [taskList];
+        // 2. Buscando a tarefa pelo ID
+        const foundTask = await TaskRepo.findById(newTask.id);
+        console.log("Tarefa encontrada:", foundTask);
 
-    console.log("Inserting a new task into the database...");
-    const task = new Task();
-    task.title = "play a game";
-    task.description = "want to play a game";
-    task.done = false;
+        // 3. Atualizando a tarefa
+        const updatedTask = await TaskRepo.update(newTask.id, { done: true });
+        console.log("Tarefa atualizada:", updatedTask);
 
-    AppDataSource.manager.save(task);
+        // 4. Listando todas as tarefas
+        const allTasks = await TaskRepo.findAll();
+        console.log("Todas as tarefas:", allTasks);
 
-    taskListManager.taskLists[0].tasks = [task];
-
-    await AppDataSource.manager.save(taskListManager);
-    console.log("Saved a new task with id: " + task.id);
-
-    console.log("Loading tasks from the database...");
-    const tasks = await AppDataSource.manager.find(Task);
-    console.log("Loaded tasks: ", tasks);
-    console.log("O jogo ACABOU!.");
-  } catch (error) {
-    console.error("Error: ", error);
-  }
+        // 5. Excluindo a tarefa
+        await TaskRepo.delete(newTask.id);
+        const deletedTask = await TaskRepo.findById(newTask.id);
+        console.log("Tarefa após exclusão (deve ser null):", deletedTask);
+    } catch (error) {
+        console.error("Error: ", error);
+    }
 }
 
 main();
