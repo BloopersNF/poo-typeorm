@@ -1,4 +1,8 @@
-import { TaskList } from "../entity/TaskList";
+import { TaskListManager } from "../entity/TaskListManager";
 import { BaseRepo } from "./BaseRepo";
 
-export const TaskListManager = new BaseRepo(TaskList);
+export class TaskListManagerRepo extends BaseRepo<TaskListManager> {
+    constructor() {
+        super(TaskListManager);
+    }
+};

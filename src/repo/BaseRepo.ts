@@ -1,11 +1,11 @@
 import { Repository, EntityTarget, DeepPartial } from "typeorm";
-import { AppDataSource } from "../data-source"; // Importe o seu DataSource
+import { AppDataSource } from "../data-source";
 
 export class BaseRepo<T> {
     protected repository: Repository<T>;
 
     constructor(entity: EntityTarget<T>) {
-        this.repository = AppDataSource.getRepository(entity);
+        this.repository = AppDataSource.getRepository<T>(entity);
     }
 
     async findById(id: number): Promise<T | null> {
