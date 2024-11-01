@@ -17,7 +17,7 @@ export class TaskListManagerService {
 
     async getTaskListManagerById(id: number): Promise<TaskListManager | null> {
         const manager = await this.taskListManagerRepository.findById(id);
-        if (!manager) throw new Error(`TaskListManager com ID ${id} não encontrado.`);
+
         return manager;
     }
 

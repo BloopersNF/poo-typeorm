@@ -15,7 +15,7 @@ export class Task {
     @Column()
     done: boolean;
 
-    @ManyToOne(() => TaskList, taskList => taskList.tasks)
+    @ManyToOne(() => TaskList, taskList => taskList.tasks, { onDelete: "CASCADE" })
     taskList: TaskList;
 
 }

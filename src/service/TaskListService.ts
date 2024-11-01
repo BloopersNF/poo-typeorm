@@ -25,19 +25,19 @@ export class TaskListService {
 
     async addTaskToTaskList(taskListId: number, title: string, description: string): Promise<Task> {
         const taskList = await this.getTaskListById(taskListId);
-
         const newTask = await this.taskService.createTask(title, description);
 
-        newTask.taskList = taskList;
+        if (!taskList.tasks) taskList.tasks = [newTask];
+        else taskList.tasks.push(newTask);
 
-        await this.taskService.updateTask(newTask.id, { taskList: newTask.taskList });
+        await this.taskListRepository.update(taskList.id, { tasks: taskList.tasks });
 
         return newTask;
     }
 
     async getTaskListById(id: number): Promise<TaskList | null> {
         const taskList = await this.taskListRepository.findById(id);
-        if (!taskList) throw new Error(`TaskList com ID ${id} não encontrada.`);
+
         return taskList;
     }
 
